@@ -90,3 +90,19 @@ uint16_t INA226_getMaskEnable(I2C_HandleTypeDef *I2CHandler, uint16_t DevAddress
 	if (HAL_I2C_Master_Receive(I2CHandler,DevAddress, ReceivedTable, 2, INA226_I2CTIMEOUT) != HAL_OK) return 0xFF;
 	else return ((uint16_t)ReceivedTable[0]<<8 | ReceivedTable[1]);
 }
+
+uint8_t INA226_setAlertLimit(I2C_HandleTypeDef *I2CHandler, uint16_t DevAddress, uint16_t ConfigWord) {
+	uint8_t SentTable[3];
+	SentTable[0] = INA226_ALERTL;
+	SentTable[1] = (ConfigWord & 0xFF00) >> 8;
+	SentTable[2] = (ConfigWord & 0x00FF);
+	return HAL_I2C_Master_Transmit(I2CHandler, DevAddress, SentTable, 3, INA226_I2CTIMEOUT);
+}
+
+uint16_t INA226_getAlertLimit(I2C_HandleTypeDef *I2CHandler, uint16_t DevAddress) {
+	uint8_t SentTable[1] = {INA226_ALERTL};
+	uint8_t ReceivedTable[2];
+	HAL_I2C_Master_Transmit(I2CHandler,DevAddress, SentTable, 1, INA226_I2CTIMEOUT);
+	if (HAL_I2C_Master_Receive(I2CHandler,DevAddress, ReceivedTable, 2, INA226_I2CTIMEOUT) != HAL_OK) return 0xFF;
+	else return ((uint16_t)ReceivedTable[0]<<8 | ReceivedTable[1]);
+}
